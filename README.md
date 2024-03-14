@@ -1,4 +1,4 @@
-# Dua zone server
+# Duaruqyah-server
 
 This project is made for dua zone project's server. This project is made with Node.js express.js and SQLite database.
 
@@ -11,8 +11,8 @@ npm install
 npm start
 ```
 
-Front end code is [here](https://github.com/nurullah91/dua-zone-frontend)
+Front end code is [here](https://github.com/nurullah91/duaruqyah)
 and front end live [link]()
 
-## Live server: https://dua-zone-server.vercel.app
+## Live server: 
 
