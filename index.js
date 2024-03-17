@@ -42,6 +42,20 @@ app.get('/api/subcategories', (req, res)=>{
     })
 })
 
+// Sub category api with category id
+app.get('/api/subcategories/:categoryId', (req, res)=>{
+    const categoryId = req.params.categoryId;
+    database.all('SELECT * FROM sub_category WHERE cat_id = ?', [categoryId], (err, rows) =>{
+        if(err){
+            res.status(500).json({error: err.message});
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+
+
 // Dua Api
 app.get('/api/dua', (req, res) => {
     database.all('SELECT * FROM dua', (err, rows) => {
@@ -71,10 +85,28 @@ app.get('/api/dua/:categoryId', (req, res)=>{
     })
 })
 
+app.get('/api/dua/subCategory/:subCategoryId', (req, res)=>{
+    const subCategoryId = req.params.subCategoryId;
+
+    database.all('SELECT * FROM dua WHERE subcat_id = ?', [subCategoryId], (err, rows) => {
+        if(err){
+            res.status(500).json({error: err.message});
+            return;
+        }
+
+        if(!rows || rows.length === 0){
+            res.status(404).json({error: 'Dua not found'});
+            return;
+        }
+
+        res.json(rows);
+    })
+})
+
 
 
 
 app.listen(port, ()=>{
-    console.log(`Dua zone server is running on the port ${port}`);
+    console.log(`Duaruqyah server is running on the port ${port}`);
 })
 
