@@ -1,112 +1,64 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const express = require("express");
 const port = process.env.PORT || 5000;
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
 
-
-// SQLite database connection
-const database = new sqlite3.Database('./dua_main.sqlite');
-
+// Data
+const dua = require("./duas.json");
+const categories = require("./categories.json");
+const sub_category = require("./sub_category.json");
 
 // middleware
 app.use(express.json());
 app.use(cors());
 
-// Home
-app.get('/', (req, res)=>{
-    res.send("Dua zone is running...")
-})
+// JSON data
 
+// Home
+app.get("/", (req, res) => {
+  res.send("Dua zone is running...");
+});
 
 // API's
 // Category api
-app.get('/api/categories', (req, res)=> {
-    database.all('SELECT * FROM category', (err, rows) => {
-        if(err){
-            res.status(500).json({error:err.message});
-            return;
-        }
-        res.json(rows);
-    })
-})
-
-// Sub category api
-app.get('/api/subcategories', (req, res)=>{
-    database.all('SELECT * FROM sub_category', (err, rows) =>{
-        if(err){
-            res.status(500).json({error: err.message});
-            return;
-        }
-        res.json(rows)
-    })
-})
-
-// Sub category api with category id
-app.get('/api/subcategories/:categoryId', (req, res)=>{
-    const categoryId = req.params.categoryId;
-    database.all('SELECT * FROM sub_category WHERE cat_id = ?', [categoryId], (err, rows) =>{
-        if(err){
-            res.status(500).json({error: err.message});
-            return;
-        }
-        res.json(rows);
-    });
+app.get("/api/categories", (req, res) => {
+  res.send(categories);
 });
 
+// Sub category api
+app.get("/api/subcategories", (req, res) => {
+    res.send(sub_category);
+});
 
+// Sub category api with category id
+app.get("/api/subcategories/:categoryId", (req, res) => {
+    const categoryId = req.params.categoryId;
+   
+    const selectedSubcategory = sub_category.filter((subCat)=>subCat.cat_id === +categoryId);
+
+    res.send(selectedSubcategory);
+});
 
 // Dua Api
-app.get('/api/dua', (req, res) => {
-    database.all('SELECT * FROM dua', (err, rows) => {
-        if(err){
-            res.status(500).json({error: err.message});
-            return;
-        }
-        res.json(rows)
-    })
-})
+app.get("/api/dua", (req, res) => {
+    res.send(dua);
+});
 
-app.get('/api/dua/:categoryId', (req, res)=>{
-    const categoryId = req.params.categoryId;
+app.get("/api/dua/:categoryId", (req, res) => {
+  const categoryId = req.params.categoryId;
 
-    database.all('SELECT * FROM dua WHERE cat_id = ?', [categoryId], (err, rows) => {
-        if(err){
-            res.status(500).json({error: err.message});
-            return;
-        }
+  const selectedDuas = dua.filter((item) => item.cat_id === +categoryId); //this + convert category id string to number
 
-        if(!rows || rows.length === 0){
-            res.status(404).json({error: 'Dua not found'});
-            return;
-        }
+  res.send(selectedDuas);
+});
 
-        res.json(rows);
-    })
-})
+app.get("/api/dua/subcategory/:subcategoryId", (req, res) => {
+  const subcategoryId = req.params.subcategoryId;
+  const selectedDua = dua.filter((item) => item.subcat_id === +subcategoryId);
 
-app.get('/api/dua/subCategory/:subCategoryId', (req, res)=>{
-    const subCategoryId = req.params.subCategoryId;
+  res.send(selectedDua);
+});
 
-    database.all('SELECT * FROM dua WHERE subcat_id = ?', [subCategoryId], (err, rows) => {
-        if(err){
-            res.status(500).json({error: err.message});
-            return;
-        }
-
-        if(!rows || rows.length === 0){
-            res.status(404).json({error: 'Dua not found'});
-            return;
-        }
-
-        res.json(rows);
-    })
-})
-
-
-
-
-app.listen(port, ()=>{
-    console.log(`Duaruqyah server is running on the port ${port}`);
-})
-
+app.listen(port, () => {
+  console.log(`Duaruqyah server is running on the port ${port}`);
+});
